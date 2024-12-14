@@ -7,7 +7,7 @@
     "dev": "vite",
     "build:ui": "vite build",
     "build:electron": "cross-env NODE_ENV=production electron .",
-    "start": "cross-env NODE_ENV=development electronmon .",
+    "start": "nodemon --watch electron --exec \"cross-env NODE_ENV=development electron .\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -26,6 +26,7 @@
     "@vitejs/plugin-react": "^4.3.4",
     "autoprefixer": "^10.4.20",
     "electronmon": "^2.0.3",
+    "nodemon": "^3.1.9",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.16",
     "vite": "^6.0.3"

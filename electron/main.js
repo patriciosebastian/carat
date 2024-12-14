@@ -5,15 +5,6 @@ import path from 'path'
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-if (process.env.NODE_ENV === 'development') {
-  import('electron-reload').then(module => {
-    module.default(path.join(__dirname, '../'), {
-      electron: path.join(__dirname, '../node_modules/.bin/electron'),
-      hardResetMethod: 'exit',
-    });
-  });
-}
-
 let mainWindow;
 let tray;
 
@@ -61,16 +52,21 @@ function createTray() {
   const iconPath = path.join(__dirname, 'carat_diamond.png');
   tray = new Tray(iconPath);
 
-  const contextMenu = Menu.buildFromTemplate([
-    { label: 'Show App', click: () => mainWindow.show() },
-    { label: 'Quit', click: () => app.quit() },
-  ]);
-
   tray.setToolTip('Carat');
-  tray.setContextMenu(contextMenu);
 
   tray.on('click', () => {
-    mainWindow.isVisible() ? mainWindow.hide() : mainWindow.show();
+    if (mainWindow) {
+      if (mainWindow.isVisible()) {
+        console.log('Hiding window');
+        mainWindow.hide();
+      } else {
+        console.log('Showing window');
+        mainWindow.show();
+        mainWindow.focus();
+      }
+    } else {
+      console.error('Main window is not defined');
+    }
   });
 }
 
