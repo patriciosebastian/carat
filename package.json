@@ -1,12 +1,33 @@
 {
   "name": "carat",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "electron/main.js",
+  "type": "module",
   "scripts": {
+    "dev": "vite",
+    "build:ui": "vite build",
+    "build:electron": "cross-env NODE_ENV=production electron .",
+    "start": "cross-env NODE_ENV=development electronmon .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "cross-env": "^7.0.3",
+    "electron": "^33.2.1",
+    "electron-reload": "^2.0.0-alpha.1",
+    "electron-store": "^10.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "autoprefixer": "^10.4.20",
+    "electronmon": "^2.0.3",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.16",
+    "vite": "^6.0.3"
+  }
 }
