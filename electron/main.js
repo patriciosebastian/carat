@@ -43,9 +43,9 @@ function createMainWindow() {
   mainWindow.loadURL(process.env.NODE_ENV === 'development' ? devUrl : prodUrl);
 
 
-  if (process.env.NODE_ENV === 'development') {
-    mainWindow.webContents.openDevTools();
-  }
+  // if (process.env.NODE_ENV === 'development') {
+  //   mainWindow.webContents.openDevTools();
+  // }
 }
 
 function createTray() {
@@ -53,6 +53,8 @@ function createTray() {
   tray = new Tray(iconPath);
 
   tray.setToolTip('Carat');
+
+  tray.setIgnoreDoubleClickEvents(true);
 
   tray.on('click', () => {
     if (mainWindow) {
@@ -69,6 +71,10 @@ function createTray() {
     }
   });
 }
+
+app.commandLine.appendSwitch('disable-gpu');
+app.commandLine.appendSwitch('disable-software-rasterizer');
+app.commandLine.appendSwitch('use-gl', 'swiftshader');
 
 app.whenReady().then(() => {
   createMainWindow();
