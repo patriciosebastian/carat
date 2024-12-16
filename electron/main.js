@@ -1,9 +1,8 @@
-import { app, BrowserWindow, Tray, Menu, screen } from 'electron'
-import { fileURLToPath } from 'url'
-import path from 'path'
+const { app, BrowserWindow, Tray, Menu, screen } = require('electron')
+const path = require('path')
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+console.log('filename:', __filename);
+console.log('directory name:', __dirname);
 
 let mainWindow;
 let tray;
@@ -24,13 +23,15 @@ function createMainWindow() {
     resizable: false, // Prevent resizing for a modal-like feel
     transparent: true, // Enable transparency
     frame: false, // Remove the default toolbar and frame
-    alwaysOnTop: true, // Optional: Keep the window always on top
-    skipTaskbar: true, // Optional: Don't show the app in the taskbar
+    // alwaysOnTop: true, // Optional: Keep the window always on top
+    // skipTaskbar: true, // Optional: Don't show the app in the taskbar
     backgroundColor: '#00000000', // Set a transparent background color
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
-      nodeIntegration: false,
+      nodeIntegration: true,
+      enableRemoteModule: false,
+      sandbox: false,
     },
   });
   // mainWindow.setMenu(null);
@@ -45,6 +46,7 @@ function createMainWindow() {
 
   // if (process.env.NODE_ENV === 'development') {
   //   mainWindow.webContents.openDevTools();
+  //   console.log('preload path:', path.join(__dirname, 'preload.js'));
   // }
 }
 
@@ -77,6 +79,7 @@ app.commandLine.appendSwitch('disable-software-rasterizer');
 app.commandLine.appendSwitch('use-gl', 'swiftshader');
 
 app.whenReady().then(() => {
+  console.log('App is ready');
   createMainWindow();
   createTray();
 
@@ -87,9 +90,10 @@ app.whenReady().then(() => {
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createMainWindow();
+    console.log('Creating main window');
   });
-});
+})
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
-});
+})

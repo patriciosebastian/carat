@@ -2,7 +2,6 @@
   "name": "carat",
   "version": "1.0.0",
   "main": "electron/main.js",
-  "type": "module",
   "scripts": {
     "dev": "vite",
     "build:ui": "vite build",
@@ -18,7 +17,7 @@
     "cross-env": "^7.0.3",
     "electron": "^33.2.1",
     "electron-reload": "^2.0.0-alpha.1",
-    "electron-store": "^10.0.0",
+    "electron-store": "^8.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
