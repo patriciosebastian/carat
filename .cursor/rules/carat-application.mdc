@@ -1,0 +1,12 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+About The Application
+I'm building a cross-platform desktop application using Electron and React (non-typescript), plus the other dependencies you see in the package.json file.
+The application this repo is building is called Carat.
+The experience I'm going for is for it to be a type of overlay window that shows/hides (or opens/closes) from clicking an icon in the native desktop toolbar... A user can then 'add' items (called gems) or perform general CRUD capabilities.
+
+Specifics of The Idea:
+I often find myself needing to go look for small resources that I use in a frequency where they matter to me, but not often enough to where I remember them. For example, very specific Laravel or Laravel ecosystem commands, npm commands, very specific Git commands, specific OS CLI commands, etc. However, I do not want to build another journal, notes, or password type application as this is mainly for small/short things I want to keep track of and want to access QUICKLY and ON DEMAND without opening a file, sifting through online docs, or going to a web page in my Notion account just to access what I'm looking for...That's what Carat will be for. A desktop overlay window accessible from an icon on your desktop toolbar that is built to embrace the constraint of your screen size--there will be no 'pages' or directories or anything like that. You can C.R.U.D. items in the app quickly, easily, and intuitively so that you can see commands and other text info that matters to you.
