@@ -44,10 +44,10 @@ function createMainWindow() {
   mainWindow.loadURL(process.env.NODE_ENV === 'development' ? devUrl : prodUrl);
 
 
-  // if (process.env.NODE_ENV === 'development') {
-  //   mainWindow.webContents.openDevTools();
-  //   console.log('preload path:', path.join(__dirname, 'preload.js'));
-  // }
+  if (process.env.NODE_ENV === 'development') {
+    mainWindow.webContents.openDevTools();
+    console.log('preload path:', path.join(__dirname, 'preload.js'));
+  }
 }
 
 function createTray() {
