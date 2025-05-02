@@ -1,0 +1,10 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+Key Points
+- Tailwind should be used in every single project regardless of the stack, unless otherwise told. (Note: Sometimes Tailwind will be pre-configured in certain projects like in Laravel projects/Laravel starter kit projects).
+- Version: I am mostly using Tailwind 4/4.1+ or 3.4.17+, so feel free to use the latest approaches for the setup and syntax for utility classes.
+- Prefer to not use the "@apply" tailwind directive when it comes to customizing themes, as the Tailwind team suggested to not use it any longer.
+- If the current project does not already use a UI/component library like maryUI, daisyUI, or shadcn/ui, use Tailwind to build with a mobile-first approach while creating fully responsive UI's.

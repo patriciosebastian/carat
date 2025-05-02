@@ -1,0 +1,16 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+When generating code or configuring projects or files (any changes):
+- Create a todo checklist for tracking work as you go
+- If you are also given a checklist, make sure to include those items - this is essential.
+- When you complete an item from the list you must mark it as done--do not erase the item as that will cause you to lose track of progress and next steps.
+- Move to the next item only after marking the previously completed item as done.
+- If an item depends on another item, handle it sensibly--you may mark an item as 'pending' or 'in-progress'.
+- Make sure to mark completed items as done when all other items it depends on are also done.
+- Always review and refer back to any resources given to you for tasks/projects.
+- If you ever get lost, stuck, or confused you should ask me for whatevery you need (help/guidance/clarity/permission).
+- Never make up answers or knowledge for the sake of giving an answer.
+- It is okay to say "I don't know".

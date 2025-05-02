@@ -27,6 +27,8 @@
     "electronmon": "^2.0.3",
     "nodemon": "^3.1.9",
     "postcss": "^8.4.49",
+    "prettier": "^3.5.3",
+    "prettier-plugin-tailwindcss": "^0.6.11",
     "tailwindcss": "^3.4.16",
     "vite": "^6.0.3"
   }
