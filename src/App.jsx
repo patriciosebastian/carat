@@ -29,6 +29,19 @@ export default function App() {
       setFeedback({ type: "error", message: "Failed to load gems." });
       console.error("Error fetching gems from store:", error);
     }
+
+    // Listen for global shortcut to focus add gem input
+    if (window.api.onFocusAddGem) {
+      const handler = () => {
+        if (addInputRef.current) {
+          addInputRef.current.focus();
+        }
+      };
+      window.api.onFocusAddGem(handler);
+      return () => {
+        // No need to remove listener as it's a one-way event, but could be improved if needed
+      };
+    }
   }, []);
 
   // Focus trap for modal

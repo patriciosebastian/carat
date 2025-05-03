@@ -15,8 +15,8 @@ This file tracks the major tasks for the Carat Electron app project. Mark items 
 - [x] Tags/category filters should only be included in the UI for the paid version of the app (so not on the smaller sized window version). Also, like I describe in the "Logic/Functionality" section of these notes, since they're optional on the paid version of the app, they should only appear for users when the feature is enabled.
 
 ### Logic/Functionality
-- [ ] Remove the search functionality entirely. I'm not sure if that makes so much sense with some of the premise of this application
-- [ ] Tags/category filters should be allowed, but optional and only for paid versions of the app
+- [x] Remove the search functionality entirely. I'm not sure if that makes so much sense with some of the premise of this application
+- [x] Tags/category filters should be allowed, but optional and only for paid versions of the app
 - [ ] Make it so that users should be able to show/hide the app window with a keyboard shortcut, as well as add a new gem via a keyboard shortcut.
 
 ### Cross-Platform Compatibility

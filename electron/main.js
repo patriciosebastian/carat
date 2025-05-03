@@ -1,9 +1,18 @@
-const { app, BrowserWindow, Tray, Menu, screen, session } = require("electron");
+const {
+  app,
+  BrowserWindow,
+  Tray,
+  Menu,
+  screen,
+  session,
+  globalShortcut,
+  ipcMain,
+} = require("electron");
 const path = require("path");
 
 // --- VERSION FLAG ---
 // Set this to true for paid version, false for free version
-const isPaidVersion = false; // TODO: Replace with real license check in the future
+const isPaidVersion = true; // TODO: Replace with real license check in the future
 
 console.log("filename:", __filename);
 console.log("directory name:", __dirname);
@@ -85,6 +94,38 @@ function createTray() {
   });
 }
 
+function registerShortcuts() {
+  // Show/hide window shortcut
+  const toggleShortcut =
+    process.platform === "darwin"
+      ? "CommandOrControl+Shift+Space"
+      : "Control+Shift+Space";
+  globalShortcut.register(toggleShortcut, () => {
+    if (mainWindow) {
+      if (mainWindow.isVisible()) {
+        mainWindow.hide();
+      } else {
+        mainWindow.show();
+        mainWindow.focus();
+      }
+    }
+  });
+
+  // Add new gem shortcut
+  globalShortcut.register("CommandOrControl+Option+N", () => {
+    console.log("CommandOrControl+Option+N shortcut triggered");
+    if (mainWindow && mainWindow.isVisible()) {
+      mainWindow.webContents.send("focus-add-gem");
+    } else if (mainWindow) {
+      mainWindow.show();
+      mainWindow.focus();
+      setTimeout(() => {
+        mainWindow.webContents.send("focus-add-gem");
+      }, 300); // Wait for window to be visible
+    }
+  });
+}
+
 app.commandLine.appendSwitch("disable-gpu");
 app.commandLine.appendSwitch("disable-software-rasterizer");
 app.commandLine.appendSwitch("use-gl", "swiftshader");
@@ -116,6 +157,7 @@ app.whenReady().then(async () => {
   console.log("App is ready");
   createMainWindow();
   createTray();
+  registerShortcuts();
 
   screen.on("display-metrics-changed", () => {
     console.log(
@@ -133,6 +175,10 @@ app.whenReady().then(async () => {
 
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") app.quit();
+});
+
+app.on("will-quit", () => {
+  globalShortcut.unregisterAll();
 });
 
 // NOTE: If you add IPC, always validate the sender and never trust input from renderer.

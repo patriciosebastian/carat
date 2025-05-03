@@ -1,4 +1,4 @@
-const { contextBridge } = require('electron');
+const { contextBridge, ipcRenderer } = require('electron');
 const Store = require('electron-store');
 
 console.log('Preload script loaded');
@@ -33,6 +33,11 @@ contextBridge.exposeInMainWorld("api", {
     const items = store.get("items") || [];
     items.splice(index, 1);
     store.set("items", items);
+  },
+  onFocusAddGem: (callback) => {
+    ipcRenderer.on("focus-add-gem", (...args) => {
+      callback(...args);
+    });
   },
   getTagsFeatureEnabled: () => store.get("tagsFeatureEnabled") || false,
   setTagsFeatureEnabled: (enabled) => store.set("tagsFeatureEnabled", enabled),
