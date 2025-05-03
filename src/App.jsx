@@ -144,7 +144,7 @@ export default function App() {
   };
 
   return (
-    <div className="relative flex h-full min-h-[600px] w-full min-w-[400px] max-w-[480px] flex-col items-center rounded-xl bg-gradient-to-br from-[#232946] to-[#16161a] p-4 shadow-2xl">
+    <div className="relative flex h-full min-h-[600px] w-full min-w-[400px] flex-col items-center rounded-xl bg-gradient-to-br from-[#232946] to-[#16161a] p-4 shadow-2xl">
       {/* Feedback message */}
       {feedback.message && (
         <div

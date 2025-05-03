@@ -34,7 +34,7 @@ function createMainWindow() {
   } else {
     // Free: smaller overlay
     customWidth = 400;
-    customHeight = 600;
+    customHeight = 800;
   }
 
   // Get the primary display
