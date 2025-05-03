@@ -32,6 +32,8 @@ function createMainWindow() {
   const primaryDisplay = screen.getPrimaryDisplay();
   const { x, y, width, height } = primaryDisplay.bounds;
 
+  process.env.CARAT_IS_PAID_VERSION = isPaidVersion ? "true" : "false";
+
   mainWindow = new BrowserWindow({
     width: customWidth,
     height: customHeight,

@@ -8,16 +8,22 @@ export default function App() {
   const [search, setSearch] = useState("");
   const [activeFilter, setActiveFilter] = useState("All");
   const [feedback, setFeedback] = useState({ type: "", message: "" });
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [tagsFeatureEnabled, setTagsFeatureEnabled] = useState(false);
+  const [isPaidVersion, setIsPaidVersion] = useState(false);
   const filters = ["All", "Development", "Social", "Videos"];
   const addInputRef = useRef(null);
   const editInputRef = useRef(null);
+  const settingsModalRef = useRef(null);
 
   useEffect(() => {
-    // const storedItems = window.api.getItems();
-    // setItems(storedItems);
-    console.log("window api info from useEffect:", window.api);
+    // Get isPaidVersion from window.api
+    setIsPaidVersion(window.api.isPaidVersion);
+    // Get tags feature toggle from store
+    if (window.api.isPaidVersion) {
+      setTagsFeatureEnabled(window.api.getTagsFeatureEnabled());
+    }
     try {
-      console.log("Fetching gems from store");
       const storedGems = window.api.getItems();
       setGems(storedGems || []);
     } catch (error) {
@@ -26,11 +32,22 @@ export default function App() {
     }
   }, []);
 
+  // Focus trap for modal
   useEffect(() => {
-    if (editIndex !== null && editInputRef.current) {
-      editInputRef.current.focus();
+    if (settingsOpen && settingsModalRef.current) {
+      settingsModalRef.current.focus();
     }
-  }, [editIndex]);
+  }, [settingsOpen]);
+
+  const handleSettingsKeyDown = (e) => {
+    if (e.key === "Escape") setSettingsOpen(false);
+  };
+
+  const handleTagsFeatureToggle = () => {
+    const newValue = !tagsFeatureEnabled;
+    setTagsFeatureEnabled(newValue);
+    window.api.setTagsFeatureEnabled(newValue);
+  };
 
   const showFeedback = (type, message) => {
     setFeedback({ type, message });
@@ -130,30 +147,82 @@ export default function App() {
         style={{ WebkitAppRegion: "drag" }}
       />
 
-      {/* Search bar and filter chips */}
-      <div className="mb-4 flex w-full flex-col gap-2">
-        <input
-          type="text"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search gems..."
-          className="w-full rounded-lg bg-[#1a1a2e] px-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          aria-label="Search gems"
-        />
-        <div className="mt-1 flex gap-2">
-          {filters.map((f) => (
+      {console.log('isPaidVersion:', isPaidVersion)}
+      {/* Settings Modal */}
+      {settingsOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+          onClick={() => setSettingsOpen(false)}
+        >
+          <div
+            className="relative w-full max-w-sm rounded-xl bg-[#232946] p-6 shadow-2xl outline-none"
+            tabIndex={-1}
+            ref={settingsModalRef}
+            onKeyDown={handleSettingsKeyDown}
+            onClick={(e) => e.stopPropagation()}
+            aria-modal="true"
+            role="dialog"
+          >
+            <h2 className="mb-4 text-lg font-bold text-white">Settings</h2>
+            {isPaidVersion && (
+              <div className="mb-4 flex items-center gap-3">
+                <label
+                  htmlFor="tags-feature-toggle"
+                  className="text-sm font-medium text-white"
+                >
+                  Enable tags/category filters
+                </label>
+                <button
+                  id="tags-feature-toggle"
+                  onClick={handleTagsFeatureToggle}
+                  className={`flex h-6 w-10 items-center rounded-full p-1 transition-colors ${tagsFeatureEnabled ? "bg-blue-600" : "bg-gray-400"}`}
+                  aria-pressed={tagsFeatureEnabled}
+                  aria-label="Toggle tags/category filters"
+                >
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${tagsFeatureEnabled ? "translate-x-4" : ""}`}
+                  ></span>
+                </button>
+              </div>
+            )}
             <button
-              key={f}
-              onClick={() => setActiveFilter(f)}
-              className={`rounded-full border border-transparent px-3 py-1 text-xs font-semibold transition ${activeFilter === f ? "bg-blue-600 text-white" : "bg-[#232946] text-gray-300 hover:bg-blue-700/60"}`}
-              aria-pressed={activeFilter === f}
-              aria-label={`Filter by ${f}`}
+              onClick={() => setSettingsOpen(false)}
+              className="absolute right-2 top-2 text-gray-400 hover:text-white focus:outline-none"
+              aria-label="Close settings"
             >
-              {f}
+              <svg width="20" height="20" fill="none" viewBox="0 0 24 24">
+                <path
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
             </button>
-          ))}
+          </div>
         </div>
-      </div>
+      )}
+
+      {/* Search bar and filter chips (only if paid and tags feature enabled) */}
+      {isPaidVersion && tagsFeatureEnabled && (
+        <div className="mb-4 flex w-full flex-col gap-2">
+          {/* (You can later update this to only show tags/categories, not search) */}
+          <div className="mt-1 flex gap-2">
+            {filters.map((f) => (
+              <button
+                key={f}
+                onClick={() => setActiveFilter(f)}
+                className={`rounded-full border border-transparent px-3 py-1 text-xs font-semibold transition ${activeFilter === f ? "bg-blue-600 text-white" : "bg-[#232946] text-gray-300 hover:bg-blue-700/60"}`}
+                aria-pressed={activeFilter === f}
+                aria-label={`Filter by ${f}`}
+              >
+                {f}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Gems list */}
       <ul className="w-full flex-1 space-y-3 overflow-y-auto pb-4">
@@ -321,6 +390,7 @@ export default function App() {
       <button
         className="absolute bottom-4 right-4 rounded-full bg-[#232946] p-2 text-gray-400 shadow-lg transition hover:bg-blue-700/60 hover:text-white"
         aria-label="Settings"
+        onClick={() => setSettingsOpen(true)}
       >
         <svg width="22" height="22" fill="none" viewBox="0 0 24 24">
           <path
