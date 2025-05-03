@@ -178,7 +178,7 @@ export default function App() {
                 />
                 <button
                   onClick={handleSave}
-                  className="rounded-lg bg-green-600 px-3 py-2 text-white transition hover:bg-green-700 disabled:opacity-50"
+                  className="rounded-lg bg-green-600 px-3 py-2 text-white transition hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400 disabled:opacity-50"
                   aria-label="Save"
                   disabled={
                     !editValue.trim() ||
@@ -202,7 +202,7 @@ export default function App() {
                 </button>
                 <button
                   onClick={() => setEditIndex(null)}
-                  className="rounded-lg bg-red-600 px-3 py-2 text-white transition hover:bg-red-700"
+                  className="rounded-lg bg-red-600 px-3 py-2 text-white transition hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400"
                   aria-label="Cancel"
                 >
                   <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
@@ -224,10 +224,10 @@ export default function App() {
                   </span>
                   {/* Optionally, add a subtitle or tags here */}
                 </div>
-                <div className="flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+                <div className="flex gap-1 opacity-0 transition-opacity focus-within:opacity-100 group-hover:opacity-100">
                   <button
                     onClick={() => handleEdit(index)}
-                    className="rounded-lg p-2 text-blue-400 hover:bg-blue-700/60"
+                    className="rounded-lg p-2 text-blue-400 hover:bg-blue-700/60 focus:outline-none focus:ring-2 focus:ring-blue-400"
                     aria-label="Edit gem"
                   >
                     <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
@@ -242,7 +242,7 @@ export default function App() {
                   </button>
                   <button
                     onClick={() => handleCopy(gem)}
-                    className="rounded-lg p-2 text-green-400 hover:bg-green-700/60"
+                    className="rounded-lg p-2 text-green-400 hover:bg-green-700/60 focus:outline-none focus:ring-2 focus:ring-green-400"
                     aria-label="Copy gem"
                   >
                     <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
@@ -268,7 +268,7 @@ export default function App() {
                   </button>
                   <button
                     onClick={() => handleDelete(index)}
-                    className="rounded-lg p-2 text-red-400 hover:bg-red-700/60"
+                    className="rounded-lg p-2 text-red-400 hover:bg-red-700/60 focus:outline-none focus:ring-2 focus:ring-red-400"
                     aria-label="Delete gem"
                   >
                     <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
