@@ -5,7 +5,6 @@ export default function App() {
   const [newGem, setNewGem] = useState("");
   const [editIndex, setEditIndex] = useState(null);
   const [editValue, setEditValue] = useState("");
-  const [search, setSearch] = useState("");
   const [activeFilter, setActiveFilter] = useState("All");
   const [feedback, setFeedback] = useState({ type: "", message: "" });
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -147,7 +146,7 @@ export default function App() {
         style={{ WebkitAppRegion: "drag" }}
       />
 
-      {console.log('isPaidVersion:', isPaidVersion)}
+      {console.log("isPaidVersion:", isPaidVersion)}
       {/* Settings Modal */}
       {settingsOpen && (
         <div
@@ -204,10 +203,10 @@ export default function App() {
         </div>
       )}
 
-      {/* Search bar and filter chips (only if paid and tags feature enabled) */}
+      {/* Tags/category filters (only if paid and tags feature enabled) */}
       {isPaidVersion && tagsFeatureEnabled && (
         <div className="mb-4 flex w-full flex-col gap-2">
-          {/* (You can later update this to only show tags/categories, not search) */}
+          {/* Only show tags/categories, not search */}
           <div className="mt-1 flex gap-2">
             {filters.map((f) => (
               <button
