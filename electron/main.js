@@ -1,6 +1,10 @@
 const { app, BrowserWindow, Tray, Menu, screen, session } = require("electron");
 const path = require("path");
 
+// --- VERSION FLAG ---
+// Set this to true for paid version, false for free version
+const isPaidVersion = false; // TODO: Replace with real license check in the future
+
 console.log("filename:", __filename);
 console.log("directory name:", __dirname);
 
@@ -11,8 +15,18 @@ let tray;
 Menu.setApplicationMenu(null);
 
 function createMainWindow() {
-  const customWidth = 800;
-  const customHeight = 600;
+  // Set window size based on version
+  let customWidth, customHeight;
+  if (isPaidVersion) {
+    // Paid: full desktop size (or large window)
+    const primaryDisplay = screen.getPrimaryDisplay();
+    customWidth = Math.min(1200, primaryDisplay.workArea.width);
+    customHeight = Math.min(800, primaryDisplay.workArea.height);
+  } else {
+    // Free: smaller overlay
+    customWidth = 400;
+    customHeight = 600;
+  }
 
   // Get the primary display
   const primaryDisplay = screen.getPrimaryDisplay();
@@ -23,16 +37,19 @@ function createMainWindow() {
     height: customHeight,
     x: x + (width - customWidth) / 2,
     y: y + (height - customHeight) / 2,
-    resizable: false,
+    resizable: isPaidVersion, // Only allow resizing in paid version
     transparent: true,
     frame: false,
     backgroundColor: "#00000000",
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
+      preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,
-      nodeIntegration: false, // SECURITY: do not expose Node.js in renderer
+      nodeIntegration: false,
       enableRemoteModule: false,
-      sandbox: process.env.NODE_ENV !== "development", // SECURITY: only enable sandbox in production
+      sandbox: process.env.NODE_ENV !== "development",
+      additionalArguments: [
+        `isPaidVersion=${isPaidVersion}`, // Pass to renderer for UI logic
+      ],
     },
   });
 
