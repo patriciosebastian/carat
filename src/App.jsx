@@ -144,7 +144,7 @@ export default function App() {
   };
 
   return (
-    <div className="relative flex h-full min-h-[600px] w-full min-w-[400px] flex-col items-center rounded-xl bg-gradient-to-br from-[#232946] to-[#16161a] p-4 shadow-2xl">
+    <div className="relative flex h-full min-h-[600px] w-full min-w-[400px] flex-col items-center rounded-xl bg-gray-700/95 p-4 shadow-2xl">
       {/* Feedback message */}
       {feedback.message && (
         <div
@@ -167,7 +167,7 @@ export default function App() {
           onClick={() => setSettingsOpen(false)}
         >
           <div
-            className="relative w-full max-w-sm rounded-xl bg-[#232946] p-6 shadow-2xl outline-none"
+            className="relative w-full max-w-sm rounded-xl bg-gray-700 p-6 shadow-2xl outline-none"
             tabIndex={-1}
             ref={settingsModalRef}
             onKeyDown={handleSettingsKeyDown}
