@@ -163,7 +163,7 @@ export default function App() {
       {/* Settings Modal */}
       {settingsOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+          className="fixed inset-0 z-50 flex items-center justify-center rounded-xl bg-black/40"
           onClick={() => setSettingsOpen(false)}
         >
           <div
@@ -237,11 +237,11 @@ export default function App() {
       )}
 
       {/* Gems list */}
-      <ul className="w-full flex-1 space-y-3 overflow-y-auto pb-4">
+      <ul className="w-full flex-1 space-y-3 overflow-y-auto pb-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 auto-rows-min gap-4">
         {gems.map((gem, index) => (
           <li
             key={index}
-            className="group relative flex items-center rounded-xl border border-[#2e2e3a] bg-[#232946] px-4 py-3 shadow-lg"
+            className="group relative flex items-center rounded-xl px-4 py-3 hover:border hover:border-gray-400"
           >
             {editIndex === index ? (
               <div className="flex w-full items-center gap-2">
@@ -300,7 +300,7 @@ export default function App() {
             ) : (
               <>
                 <div className="flex flex-1 flex-col">
-                  <span className="text-base font-semibold leading-tight text-white">
+                  <span className="text-base font-semibold leading-tight text-gray-200 hover:text-gray-400">
                     {gem}
                   </span>
                   {/* Optionally, add a subtitle or tags here */}
