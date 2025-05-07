@@ -8,20 +8,21 @@ export default function App() {
   const [activeFilter, setActiveFilter] = useState("All");
   const [feedback, setFeedback] = useState({ type: "", message: "" });
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const [tagsFeatureEnabled, setTagsFeatureEnabled] = useState(false);
+  const [favoritesFeatureEnabled, setFavoritesFeatureEnabled] = useState(false);
   const [isPaidVersion, setIsPaidVersion] = useState(false);
   const [showAddGemInput, setShowAddGemInput] = useState(false);
-  const filters = ["All", "Development", "Social", "Videos"];
   const addInputRef = useRef(null);
   const editInputRef = useRef(null);
   const settingsModalRef = useRef(null);
+  const [favorites, setFavorites] = useState([]);
 
   useEffect(() => {
     // Get isPaidVersion from window.api
     setIsPaidVersion(window.api.isPaidVersion);
-    // Get tags feature toggle from store
+    // Get favorites feature toggle from store
     if (window.api.isPaidVersion) {
-      setTagsFeatureEnabled(window.api.getTagsFeatureEnabled());
+      setFavoritesFeatureEnabled(window.api.getFavoritesFeatureEnabled?.() ?? false);
+      setFavorites(window.api.getFavorites?.() ?? []);
     }
     try {
       const storedGems = window.api.getItems();
@@ -56,10 +57,10 @@ export default function App() {
     if (e.key === "Escape") setSettingsOpen(false);
   };
 
-  const handleTagsFeatureToggle = () => {
-    const newValue = !tagsFeatureEnabled;
-    setTagsFeatureEnabled(newValue);
-    window.api.setTagsFeatureEnabled(newValue);
+  const handleFavoritesFeatureToggle = () => {
+    const newValue = !favoritesFeatureEnabled;
+    setFavoritesFeatureEnabled(newValue);
+    window.api.setFavoritesFeatureEnabled?.(newValue);
   };
 
   const showFeedback = (type, message) => {
@@ -154,6 +155,17 @@ export default function App() {
     }
   };
 
+  const handleToggleFavorite = (index) => {
+    let updatedFavorites;
+    if (favorites.includes(index)) {
+      updatedFavorites = favorites.filter((i) => i !== index);
+    } else {
+      updatedFavorites = [...favorites, index];
+    }
+    setFavorites(updatedFavorites);
+    window.api.setFavorites?.(updatedFavorites);
+  };
+
   return (
     <div className="relative flex h-full min-h-[600px] w-full min-w-[400px] flex-col items-center rounded-xl bg-gray-700/95 p-4 shadow-2xl">
       {/* Feedback message */}
@@ -194,13 +206,6 @@ export default function App() {
           <button
             onClick={() => handleShowAddGemInput()}
             className="rounded-lg text-3xl text-gray-200 transition hover:cursor-pointer z-30"
-            // disabled={
-            //   !newGem.trim() ||
-            //   gems.some(
-            //     (g) => g.trim().toLowerCase() === newGem.trim().toLowerCase(),
-            //   )
-            // }
-            // aria-label="Add gem"
             aria-label="Show add gem input"
           >
             +
@@ -252,20 +257,20 @@ export default function App() {
             {isPaidVersion && (
               <div className="mb-4 flex items-center gap-3">
                 <label
-                  htmlFor="tags-feature-toggle"
+                  htmlFor="favorites-feature-toggle"
                   className="text-sm font-medium text-white"
                 >
-                  Enable tags/category filters
+                  Enable favorites
                 </label>
                 <button
-                  id="tags-feature-toggle"
-                  onClick={handleTagsFeatureToggle}
-                  className={`flex h-6 w-10 items-center rounded-full p-1 transition-colors ${tagsFeatureEnabled ? "bg-blue-600" : "bg-gray-400"}`}
-                  aria-pressed={tagsFeatureEnabled}
-                  aria-label="Toggle tags/category filters"
+                  id="favorites-feature-toggle"
+                  onClick={handleFavoritesFeatureToggle}
+                  className={`flex h-6 w-10 items-center rounded-full p-1 transition-colors ${favoritesFeatureEnabled ? "bg-blue-600" : "bg-gray-400"}`}
+                  aria-pressed={favoritesFeatureEnabled}
+                  aria-label="Toggle favorites feature"
                 >
                   <span
-                    className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${tagsFeatureEnabled ? "translate-x-4" : ""}`}
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${favoritesFeatureEnabled ? "translate-x-4" : ""}`}
                   ></span>
                 </button>
               </div>
@@ -289,100 +294,65 @@ export default function App() {
         </div>
       )}
 
-      {/* Tags/category filters (only if paid and tags feature enabled) */}
-      {isPaidVersion && tagsFeatureEnabled && (
-        <div className="mb-4 flex w-full flex-col gap-2">
-          {/* Only show tags/categories, not search */}
-          <div className="mt-1 flex gap-2">
-            {filters.map((f) => (
-              <button
-                key={f}
-                onClick={() => setActiveFilter(f)}
-                className={`rounded-full border border-transparent px-3 py-1 text-xs font-semibold transition ${activeFilter === f ? "bg-blue-600 text-white" : "bg-[#232946] text-gray-300 hover:bg-blue-700/60"}`}
-                aria-pressed={activeFilter === f}
-                aria-label={`Filter by ${f}`}
-              >
-                {f}
-              </button>
+      {/* Favorites column (paid + enabled) */}
+      {isPaidVersion && favoritesFeatureEnabled && (
+        <div className="mb-4 w-full grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-1 xl:grid-cols-1 2xl:grid-cols-1">
+          <div className="flex flex-col gap-2">
+            <h3 className="text-sm font-bold text-blue-300 mb-2">Favorites</h3>
+            {favorites.length === 0 && <span className="text-xs text-gray-400">No favorites yet.</span>}
+            {favorites.map((favIdx) => (
+              <div key={favIdx} className="flex items-center justify-between rounded-lg bg-[#232946] px-3 py-2">
+                <span className="text-base text-white truncate">{gems[favIdx]}</span>
+                <button
+                  onClick={() => handleToggleFavorite(favIdx)}
+                  className="ml-2 rounded p-1 text-yellow-400 hover:bg-yellow-700/30"
+                  aria-label="Remove from favorites"
+                >
+                  ★
+                </button>
+              </div>
             ))}
           </div>
         </div>
       )}
 
-      {/* Gems list */}
+      {/* Gems list (excluding favorites if enabled) */}
       <ul className="w-full flex-1 space-y-3 overflow-y-auto pb-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 auto-rows-min gap-4">
-        {gems.map((gem, index) => (
-          <li
-            key={index}
-            className="group relative flex items-center rounded-xl px-4 py-3 hover:border hover:border-gray-400"
-          >
-            {editIndex === index ? (
-              <div className="flex w-full items-center gap-2">
-                <input
-                  type="text"
-                  value={editValue}
-                  onChange={(e) => setEditValue(e.target.value)}
-                  className="flex-1 rounded-lg bg-[#1a1a2e] px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  aria-label="Edit gem"
-                  ref={editInputRef}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") handleSave();
-                    if (e.key === "Escape") setEditIndex(null);
-                  }}
-                />
-                <button
-                  onClick={handleSave}
-                  className="rounded-lg bg-green-600 px-3 py-2 text-white transition hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400 disabled:opacity-50"
-                  aria-label="Save"
-                  disabled={
-                    !editValue.trim() ||
-                    gems.some(
-                      (g, i) =>
-                        i !== editIndex &&
-                        g.trim().toLowerCase() ===
-                          editValue.trim().toLowerCase(),
-                    )
-                  }
-                >
-                  <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
-                    <path
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                </button>
-                <button
-                  onClick={() => setEditIndex(null)}
-                  className="rounded-lg bg-red-600 px-3 py-2 text-white transition hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400"
-                  aria-label="Cancel"
-                >
-                  <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
-                    <path
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </button>
-              </div>
-            ) : (
-              <>
-                <div className="flex flex-1 flex-col">
-                  <span className="text-base font-semibold leading-tight text-gray-200 hover:text-gray-400">
-                    {gem}
-                  </span>
-                  {/* Optionally, add a subtitle or tags here */}
-                </div>
-                <div className="flex gap-1 opacity-0 transition-opacity focus-within:opacity-100 group-hover:opacity-100">
-                  <button
-                    onClick={() => handleEdit(index)}
-                    className="rounded-lg p-2 text-blue-400 hover:bg-blue-700/60 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        {gems.map((gem, index) => {
+          // If favorites enabled, skip gems that are in favorites for the main grid
+          if (isPaidVersion && favoritesFeatureEnabled && favorites.includes(index)) return null;
+          return (
+            <li
+              key={index}
+              className="group relative flex items-center rounded-xl px-4 py-3 hover:border hover:border-gray-400"
+            >
+              {editIndex === index ? (
+                <div className="flex w-full items-center gap-2">
+                  <input
+                    type="text"
+                    value={editValue}
+                    onChange={(e) => setEditValue(e.target.value)}
+                    className="flex-1 rounded-lg bg-[#1a1a2e] px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     aria-label="Edit gem"
+                    ref={editInputRef}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") handleSave();
+                      if (e.key === "Escape") setEditIndex(null);
+                    }}
+                  />
+                  <button
+                    onClick={handleSave}
+                    className="rounded-lg bg-green-600 px-3 py-2 text-white transition hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400 disabled:opacity-50"
+                    aria-label="Save"
+                    disabled={
+                      !editValue.trim() ||
+                      gems.some(
+                        (g, i) =>
+                          i !== editIndex &&
+                          g.trim().toLowerCase() ===
+                            editValue.trim().toLowerCase(),
+                      )
+                    }
                   >
                     <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
                       <path
@@ -390,40 +360,14 @@ export default function App() {
                         strokeWidth="2"
                         strokeLinecap="round"
                         strokeLinejoin="round"
-                        d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 112.828 2.828L11.828 15.828a2 2 0 01-2.828 0L9 13zm-6 6h6"
+                        d="M5 13l4 4L19 7"
                       />
                     </svg>
                   </button>
                   <button
-                    onClick={() => handleCopy(gem)}
-                    className="rounded-lg p-2 text-green-400 hover:bg-green-700/60 focus:outline-none focus:ring-2 focus:ring-green-400"
-                    aria-label="Copy gem"
-                  >
-                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
-                      <rect
-                        x="9"
-                        y="9"
-                        width="13"
-                        height="13"
-                        rx="2"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      />
-                      <rect
-                        x="3"
-                        y="3"
-                        width="13"
-                        height="13"
-                        rx="2"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      />
-                    </svg>
-                  </button>
-                  <button
-                    onClick={() => handleDelete(index)}
-                    className="rounded-lg p-2 text-red-400 hover:bg-red-700/60 focus:outline-none focus:ring-2 focus:ring-red-400"
-                    aria-label="Delete gem"
+                    onClick={() => setEditIndex(null)}
+                    className="rounded-lg bg-red-600 px-3 py-2 text-white transition hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400"
+                    aria-label="Cancel"
                   >
                     <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
                       <path
@@ -431,15 +375,91 @@ export default function App() {
                         strokeWidth="2"
                         strokeLinecap="round"
                         strokeLinejoin="round"
-                        d="M3 6h18M9 6v12a2 2 0 002 2h2a2 2 0 002-2V6m-6 0V4a2 2 0 012-2h2a2 2 0 012 2v2"
+                        d="M6 18L18 6M6 6l12 12"
                       />
                     </svg>
                   </button>
                 </div>
-              </>
-            )}
-          </li>
-        ))}
+              ) : (
+                <>
+                  <div className="flex flex-1 flex-col">
+                    <span className="text-base font-semibold leading-tight text-gray-200 hover:text-gray-400">
+                      {gem}
+                    </span>
+                  </div>
+                  <div className="flex gap-1 opacity-0 transition-opacity focus-within:opacity-100 group-hover:opacity-100">
+                    <button
+                      onClick={() => handleEdit(index)}
+                      className="rounded-lg p-2 text-blue-400 hover:bg-blue-700/60 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                      aria-label="Edit gem"
+                    >
+                      <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
+                        <path
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 112.828 2.828L11.828 15.828a2 2 0 01-2.828 0L9 13zm-6 6h6"
+                        />
+                      </svg>
+                    </button>
+                    <button
+                      onClick={() => handleCopy(gem)}
+                      className="rounded-lg p-2 text-green-400 hover:bg-green-700/60 focus:outline-none focus:ring-2 focus:ring-green-400"
+                      aria-label="Copy gem"
+                    >
+                      <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
+                        <rect
+                          x="9"
+                          y="9"
+                          width="13"
+                          height="13"
+                          rx="2"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                        />
+                        <rect
+                          x="3"
+                          y="3"
+                          width="13"
+                          height="13"
+                          rx="2"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                        />
+                      </svg>
+                    </button>
+                    <button
+                      onClick={() => handleDelete(index)}
+                      className="rounded-lg p-2 text-red-400 hover:bg-red-700/60 focus:outline-none focus:ring-2 focus:ring-red-400"
+                      aria-label="Delete gem"
+                    >
+                      <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
+                        <path
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M3 6h18M9 6v12a2 2 0 002 2h2a2 2 0 002-2V6m-6 0V4a2 2 0 012-2h2a2 2 0 012 2v2"
+                        />
+                      </svg>
+                    </button>
+                    {/* Favorite button */}
+                    {isPaidVersion && favoritesFeatureEnabled && (
+                      <button
+                        onClick={() => handleToggleFavorite(index)}
+                        className={`rounded-lg p-2 ${favorites.includes(index) ? "text-yellow-400" : "text-gray-400"} hover:bg-yellow-700/30 focus:outline-none focus:ring-2 focus:ring-yellow-400`}
+                        aria-label={favorites.includes(index) ? "Unfavorite" : "Favorite"}
+                      >
+                        ★
+                      </button>
+                    )}
+                  </div>
+                </>
+              )}
+            </li>
+          );
+        })}
       </ul>
 
       {/* Add Gem Button */}

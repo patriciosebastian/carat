@@ -17,6 +17,9 @@ This file tracks the major tasks for the Carat Electron app project. Mark items 
 ### Logic/Functionality
 - [x] Remove the search functionality entirely. I'm not sure if that makes so much sense with some of the premise of this application
 - [x] Tags/category filters should be allowed, but optional and only for paid versions of the app
+- [x] Completely replace the tags/category filters feature with a simple favorites feature.
+    - The favorites feature should also be optional for paid users/versions of the app like the tags/category filters feature, so it should also be enabled/disabled by a toggle in the settings modal. Free users/paid version of the app should not see the toggle.
+    - When enabled, the favorites feature should only ever take up one column in the application window (that column being the first column on the left). The favorites feature should never be more than one column on any size no matter what.
 - [ ] Make it so that users should be able to show/hide the app window with a keyboard shortcut, as well as add a new gem via a keyboard shortcut.
 
 ### Cross-Platform Compatibility
