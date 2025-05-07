@@ -73,6 +73,11 @@ This file tracks the major tasks for the Carat Electron app project. Mark items 
 - [ ] Add import/export for gems
 - [ ] Add settings/preferences functionality
 - [ ] Improve dev workflow (electron-vite, vite-plugin-electron, etc.)
+- [x] Show the 'add gem' input and focus it when the add gem keyboard shortcut is executed. If the input is hidden before the shortcut, it should become visible and focused.
+- [x] Add an 'Add Gem' button next to the input that calls handleAdd() on click (in addition to Enter key).
+- [x] The add gem keyboard shortcut should toggle the visibility of the add gem input, just like the plus icon toggles it.
+- [x] Both the plus icon to add a gem and the add gem keyboard shortcut should clear the state of the add gem input when the input is being hidden so that every time the add gem input becomes visible its clear from any previous state.
+- [x] When the add gem input is visible and focused on, if the escape key is pressed, it should clear the input and hide it.
 
 ---
 

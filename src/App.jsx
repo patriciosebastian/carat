@@ -11,15 +11,24 @@ export default function App() {
   const [favoritesFeatureEnabled, setFavoritesFeatureEnabled] = useState(false);
   const [isPaidVersion, setIsPaidVersion] = useState(false);
   const [showAddGemInput, setShowAddGemInput] = useState(false);
+  const showAddGemInputRef = useRef(showAddGemInput);
   const addInputRef = useRef(null);
   const editInputRef = useRef(null);
   const settingsModalRef = useRef(null);
   const [favorites, setFavorites] = useState([]);
 
   useEffect(() => {
-    // Get isPaidVersion from window.api
+    showAddGemInputRef.current = showAddGemInput;
+  }, [showAddGemInput]);
+
+  useEffect(() => {
+    if (showAddGemInput && addInputRef.current) {
+      addInputRef.current.focus();
+    }
+  }, [showAddGemInput]);
+
+  useEffect(() => {
     setIsPaidVersion(window.api.isPaidVersion);
-    // Get favorites feature toggle from store
     if (window.api.isPaidVersion) {
       setFavoritesFeatureEnabled(window.api.getFavoritesFeatureEnabled?.() ?? false);
       setFavorites(window.api.getFavorites?.() ?? []);
@@ -31,22 +40,19 @@ export default function App() {
       setFeedback({ type: "error", message: "Failed to load gems." });
       console.error("Error fetching gems from store:", error);
     }
-
-    // Listen for global shortcut to focus add gem input
     if (window.api.onFocusAddGem) {
       const handler = () => {
-        if (addInputRef.current) {
-          addInputRef.current.focus();
+        if (showAddGemInputRef.current) {
+          setShowAddGemInput(false);
+          setNewGem("");
+        } else {
+          setShowAddGemInput(true);
         }
       };
       window.api.onFocusAddGem(handler);
-      return () => {
-        // No need to remove listener as it's a one-way event, but could be improved if needed
-      };
     }
   }, []);
 
-  // Focus trap for modal
   useEffect(() => {
     if (settingsOpen && settingsModalRef.current) {
       settingsModalRef.current.focus();
@@ -92,11 +98,11 @@ export default function App() {
   };
 
   const handleShowAddGemInput = () => {
-    setShowAddGemInput((prev) => !prev);
-    if (!showAddGemInput) {
-      setTimeout(() => {
-        addInputRef.current && addInputRef.current.focus();
-      }, 10);
+    if (showAddGemInputRef.current) {
+      setShowAddGemInput(false);
+      setNewGem("");
+    } else {
+      setShowAddGemInput(true);
     }
   };
 
@@ -187,18 +193,37 @@ export default function App() {
       {/* Controls */}
       <div className="mb-4 mr-24 flex w-full justify-center">
         {showAddGemInput && (
-          <input
-            type="text"
-            value={newGem}
-            onChange={(e) => setNewGem(e.target.value)}
-            placeholder="Add a new gem..."
-            className="max-w-[320px] flex-1 rounded-lg bg-[#1a1a2e] px-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            onKeyDown={(e) => {
-              if (e.key === "Enter") handleAdd();
-            }}
-            aria-label="Add new gem"
-            ref={addInputRef}
-          />
+          <div className="flex gap-2 w-full max-w-[400px]">
+            <input
+              type="text"
+              value={newGem}
+              onChange={(e) => setNewGem(e.target.value)}
+              placeholder="Add a new gem..."
+              className="flex-1 rounded-lg bg-[#1a1a2e] px-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleAdd();
+                if (e.key === "Escape") {
+                  setNewGem("");
+                  setShowAddGemInput(false);
+                }
+              }}
+              aria-label="Add new gem"
+              ref={addInputRef}
+            />
+            <button
+              onClick={handleAdd}
+              className="rounded-lg bg-blue-600 px-4 py-2 font-bold text-white shadow-lg transition hover:bg-blue-700 disabled:opacity-50"
+              disabled={
+                !newGem.trim() ||
+                gems.some(
+                  (g) => g.trim().toLowerCase() === newGem.trim().toLowerCase(),
+                )
+              }
+              aria-label="Add gem"
+            >
+              Add Gem
+            </button>
+          </div>
         )}
 
         <div className="absolute top-4 right-4 flex justify-center items-center gap-3 z-20">
