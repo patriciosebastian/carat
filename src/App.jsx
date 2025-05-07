@@ -10,6 +10,7 @@ export default function App() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [tagsFeatureEnabled, setTagsFeatureEnabled] = useState(false);
   const [isPaidVersion, setIsPaidVersion] = useState(false);
+  const [showAddGemInput, setShowAddGemInput] = useState(false);
   const filters = ["All", "Development", "Social", "Videos"];
   const addInputRef = useRef(null);
   const editInputRef = useRef(null);
@@ -82,9 +83,19 @@ export default function App() {
       setNewGem("");
       showFeedback("success", "Gem added!");
       addInputRef.current && addInputRef.current.focus();
+      setShowAddGemInput(false);
     } catch (error) {
       showFeedback("error", "Failed to add gem.");
       console.error(error);
+    }
+  };
+
+  const handleShowAddGemInput = () => {
+    setShowAddGemInput((prev) => !prev);
+    if (!showAddGemInput) {
+      setTimeout(() => {
+        addInputRef.current && addInputRef.current.focus();
+      }, 10);
     }
   };
 
@@ -155,11 +166,73 @@ export default function App() {
       )}
       {/* Draggable area */}
       <div
-        className="absolute left-0 right-0 top-0 -z-10 h-8 w-full cursor-move bg-transparent"
+        className="absolute left-0 right-0 top-0 -z-10 h-6 w-full cursor-move bg-transparent"
         style={{ WebkitAppRegion: "drag" }}
       />
 
-      {console.log("isPaidVersion:", isPaidVersion)}
+      {/* Start: Testing Add Gem Button and Settings Button Here */}
+
+      {/* Controls */}
+      <div className="mb-4 mr-24 flex w-full justify-center">
+        {showAddGemInput && (
+          <input
+            type="text"
+            value={newGem}
+            onChange={(e) => setNewGem(e.target.value)}
+            placeholder="Add a new gem..."
+            className="max-w-[320px] flex-1 rounded-lg bg-[#1a1a2e] px-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleAdd();
+            }}
+            aria-label="Add new gem"
+            ref={addInputRef}
+          />
+        )}
+
+        <div className="absolute top-4 right-4 flex justify-center items-center gap-3 z-20">
+          {/* Add Button */}
+          <button
+            onClick={() => handleShowAddGemInput()}
+            className="rounded-lg text-3xl text-gray-200 transition hover:cursor-pointer z-30"
+            // disabled={
+            //   !newGem.trim() ||
+            //   gems.some(
+            //     (g) => g.trim().toLowerCase() === newGem.trim().toLowerCase(),
+            //   )
+            // }
+            // aria-label="Add gem"
+            aria-label="Show add gem input"
+          >
+            +
+          </button>
+
+          {/* Settings Icon */}
+          <button
+            className="rounded-full text-gray-200 hover:cursor-pointer z-30"
+            aria-label="Settings"
+            onClick={() => setSettingsOpen(true)}
+          >
+            <svg
+              width="22"
+              height="22"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 15.5A3.5 3.5 0 1112 8.5a3.5 3.5 0 010 7zm7.94-2.06a1.5 1.5 0 00.33-1.64l-1-1.73a1.5 1.5 0 01.11-1.64l.95-1.64a1.5 1.5 0 00-.33-1.64l-1.5-1.5a1.5 1.5 0 00-1.64-.33l-1.64.95a1.5 1.5 0 01-1.64-.11l-1.73-1a1.5 1.5 0 00-1.64.33l-1.5 1.5a1.5 1.5 0 00-.33 1.64l.95 1.64a1.5 1.5 0 01-.11 1.64l-1 1.73a1.5 1.5 0 00.33 1.64l1.5 1.5a1.5 1.5 0 001.64.33l1.64-.95a1.5 1.5 0 011.64.11l1.73 1a1.5 1.5 0 001.64-.33l1.5-1.5z"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+
+      {/* End: Testing Add Gem Button and Settings Button Here */}
+
       {/* Settings Modal */}
       {settingsOpen && (
         <div
@@ -370,7 +443,7 @@ export default function App() {
       </ul>
 
       {/* Add Gem Button */}
-      <div className="mt-4 flex w-full justify-center">
+      {/* <div className="mt-4 flex w-full justify-center">
         <input
           type="text"
           value={newGem}
@@ -396,10 +469,10 @@ export default function App() {
         >
           +
         </button>
-      </div>
+      </div> */}
 
       {/* Settings Icon */}
-      <button
+      {/* <button
         className="absolute bottom-4 right-4 rounded-full bg-[#232946] p-2 text-gray-400 shadow-lg transition hover:bg-blue-700/60 hover:text-white"
         aria-label="Settings"
         onClick={() => setSettingsOpen(true)}
@@ -413,7 +486,7 @@ export default function App() {
             d="M12 15.5A3.5 3.5 0 1112 8.5a3.5 3.5 0 010 7zm7.94-2.06a1.5 1.5 0 00.33-1.64l-1-1.73a1.5 1.5 0 01.11-1.64l.95-1.64a1.5 1.5 0 00-.33-1.64l-1.5-1.5a1.5 1.5 0 00-1.64-.33l-1.64.95a1.5 1.5 0 01-1.64-.11l-1.73-1a1.5 1.5 0 00-1.64.33l-1.5 1.5a1.5 1.5 0 00-.33 1.64l.95 1.64a1.5 1.5 0 01-.11 1.64l-1 1.73a1.5 1.5 0 00.33 1.64l1.5 1.5a1.5 1.5 0 001.64.33l1.64-.95a1.5 1.5 0 011.64.11l1.73 1a1.5 1.5 0 001.64-.33l1.5-1.5z"
           />
         </svg>
-      </button>
+      </button> */}
     </div>
   );
 }
