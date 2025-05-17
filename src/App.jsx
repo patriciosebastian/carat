@@ -342,14 +342,14 @@ export default function App() {
       )}
 
       {/* Gems list (excluding favorites if enabled) */}
-      <ul className="w-full flex-1 space-y-3 overflow-y-auto pb-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 auto-rows-min gap-4">
+      <ul className="w-full flex-1 overflow-y-auto pb-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 auto-rows-min gap-4">
         {gems.map((gem, index) => {
           // If favorites enabled, skip gems that are in favorites for the main grid
           if (isPaidVersion && favoritesFeatureEnabled && favorites.includes(index)) return null;
           return (
             <li
               key={index}
-              className="group relative flex items-center rounded-xl px-4 py-3 hover:border hover:border-gray-400"
+              className="group relative flex items-start rounded-xl px-4 py-3 hover:border hover:border-gray-400"
             >
               {editIndex === index ? (
                 <div className="flex w-full items-center gap-2">
