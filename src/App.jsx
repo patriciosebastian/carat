@@ -365,7 +365,7 @@ export default function App() {
           return (
             <li
               key={index}
-              className="group relative flex items-center rounded-xl px-4 py-3 hover:text-white overflow-x-hidden text-wrap"
+              className="group relative flex items-center rounded-xl px-4 py-3 hover:text-white text-wrap"
             >
               {editIndex === index ? (
                 <div className="flex w-full items-center gap-2">
@@ -431,13 +431,13 @@ export default function App() {
                   <div className="relative gem-menu">
                     <button
                       onClick={() => setOpenMenuIndex(openMenuIndex === index ? null : index)}
-                      className="rounded-lg p-2 text-gray-400 hover:bg-gray-600/60 hover:text-white opacity-0 transition-opacity focus-within:opacity-100 group-hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-gray-400"
+                      className="rounded-lg p-2 text-gray-400 hover:bg-gray-600/60 hover:text-white opacity-0 transition-opacity focus-within:opacity-100 group-hover:opacity-100 focus:outline-none focus:ring-1 focus:ring-gray-400"
                       aria-label="More actions"
                     >
                       <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
-                        <circle cx="12" cy="5" r="1" fill="currentColor" />
-                        <circle cx="12" cy="12" r="1" fill="currentColor" />
-                        <circle cx="12" cy="19" r="1" fill="currentColor" />
+                        <circle cx="12" cy="4" r="2.5" fill="currentColor" />
+                        <circle cx="12" cy="12" r="2.5" fill="currentColor" />
+                        <circle cx="12" cy="20" r="2.5" fill="currentColor" />
                       </svg>
                     </button>
                     {openMenuIndex === index && (
