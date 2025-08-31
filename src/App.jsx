@@ -16,6 +16,7 @@ export default function App() {
   const editInputRef = useRef(null);
   const settingsModalRef = useRef(null);
   const [favorites, setFavorites] = useState([]);
+  const [openMenuIndex, setOpenMenuIndex] = useState(null);
 
   useEffect(() => {
     showAddGemInputRef.current = showAddGemInput;
@@ -58,6 +59,19 @@ export default function App() {
       settingsModalRef.current.focus();
     }
   }, [settingsOpen]);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (openMenuIndex !== null && !e.target.closest('.gem-menu')) {
+        setOpenMenuIndex(null);
+      }
+    };
+
+    if (openMenuIndex !== null) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [openMenuIndex]);
 
   const handleSettingsKeyDown = (e) => {
     if (e.key === "Escape") setSettingsOpen(false);
@@ -414,72 +428,97 @@ export default function App() {
                       {gem}
                     </span>
                   </div>
-                  <div className="flex gap-1 opacity-0 transition-opacity focus-within:opacity-100 group-hover:opacity-100">
+                  <div className="relative gem-menu">
                     <button
-                      onClick={() => handleEdit(index)}
-                      className="rounded-lg p-2 text-blue-400 hover:bg-blue-700/60 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                      aria-label="Edit gem"
+                      onClick={() => setOpenMenuIndex(openMenuIndex === index ? null : index)}
+                      className="rounded-lg p-2 text-gray-400 hover:bg-gray-600/60 hover:text-white opacity-0 transition-opacity focus-within:opacity-100 group-hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-gray-400"
+                      aria-label="More actions"
                     >
                       <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
-                        <path
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 112.828 2.828L11.828 15.828a2 2 0 01-2.828 0L9 13zm-6 6h6"
-                        />
+                        <circle cx="12" cy="5" r="1" fill="currentColor" />
+                        <circle cx="12" cy="12" r="1" fill="currentColor" />
+                        <circle cx="12" cy="19" r="1" fill="currentColor" />
                       </svg>
                     </button>
-                    <button
-                      onClick={() => handleCopy(gem)}
-                      className="rounded-lg p-2 text-green-400 hover:bg-green-700/60 focus:outline-none focus:ring-2 focus:ring-green-400"
-                      aria-label="Copy gem"
-                    >
-                      <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
-                        <rect
-                          x="9"
-                          y="9"
-                          width="13"
-                          height="13"
-                          rx="2"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                        />
-                        <rect
-                          x="3"
-                          y="3"
-                          width="13"
-                          height="13"
-                          rx="2"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                        />
-                      </svg>
-                    </button>
-                    <button
-                      onClick={() => handleDelete(index)}
-                      className="rounded-lg p-2 text-red-400 hover:bg-red-700/60 focus:outline-none focus:ring-2 focus:ring-red-400"
-                      aria-label="Delete gem"
-                    >
-                      <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
-                        <path
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M3 6h18M9 6v12a2 2 0 002 2h2a2 2 0 002-2V6m-6 0V4a2 2 0 012-2h2a2 2 0 012 2v2"
-                        />
-                      </svg>
-                    </button>
-                    {/* Favorite button */}
-                    {isPaidVersion && favoritesFeatureEnabled && (
-                      <button
-                        onClick={() => handleToggleFavorite(index)}
-                        className={`rounded-lg p-2 ${favorites.includes(index) ? "text-yellow-400" : "text-gray-400"} hover:bg-yellow-700/30 focus:outline-none focus:ring-2 focus:ring-yellow-400`}
-                        aria-label={favorites.includes(index) ? "Unfavorite" : "Favorite"}
-                      >
-                        ★
-                      </button>
+                    {openMenuIndex === index && (
+                      <div className="absolute right-0 top-full z-50 mt-1 w-32 rounded-lg bg-gray-800 shadow-xl border border-gray-600">
+                        <button
+                          onClick={() => {
+                            handleEdit(index);
+                            setOpenMenuIndex(null);
+                          }}
+                          className="flex w-full items-center gap-2 rounded-t-lg px-3 py-2 text-left text-sm text-blue-400 hover:bg-gray-700"
+                        >
+                          <svg width="14" height="14" fill="none" viewBox="0 0 24 24">
+                            <path
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 112.828 2.828L11.828 15.828a2 2 0 01-2.828 0L9 13zm-6 6h6"
+                            />
+                          </svg>
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => {
+                            handleCopy(gem);
+                            setOpenMenuIndex(null);
+                          }}
+                          className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-green-400 hover:bg-gray-700"
+                        >
+                          <svg width="14" height="14" fill="none" viewBox="0 0 24 24">
+                            <rect
+                              x="9"
+                              y="9"
+                              width="13"
+                              height="13"
+                              rx="2"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                            />
+                            <rect
+                              x="3"
+                              y="3"
+                              width="13"
+                              height="13"
+                              rx="2"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                            />
+                          </svg>
+                          Copy
+                        </button>
+                        <button
+                          onClick={() => {
+                            handleDelete(index);
+                            setOpenMenuIndex(null);
+                          }}
+                          className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-red-400 hover:bg-gray-700"
+                        >
+                          <svg width="14" height="14" fill="none" viewBox="0 0 24 24">
+                            <path
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M3 6h18M9 6v12a2 2 0 002 2h2a2 2 0 002-2V6m-6 0V4a2 2 0 012-2h2a2 2 0 012 2v2"
+                            />
+                          </svg>
+                          Delete
+                        </button>
+                        {isPaidVersion && favoritesFeatureEnabled && (
+                          <button
+                            onClick={() => {
+                              handleToggleFavorite(index);
+                              setOpenMenuIndex(null);
+                            }}
+                            className={`flex w-full items-center gap-2 rounded-b-lg px-3 py-2 text-left text-sm hover:bg-gray-700 ${favorites.includes(index) ? "text-yellow-400" : "text-gray-400"}`}
+                          >
+                            ★ {favorites.includes(index) ? "Unfavorite" : "Favorite"}
+                          </button>
+                        )}
+                      </div>
                     )}
                   </div>
                 </>
