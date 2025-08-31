@@ -226,38 +226,40 @@ export default function App() {
           </div>
         )}
 
-        <div className="absolute top-4 right-4 flex justify-center items-center gap-3 z-20">
-          {/* Add Button */}
-          <button
-            onClick={() => handleShowAddGemInput()}
-            className="rounded-lg text-3xl text-gray-200 transition hover:cursor-pointer z-30"
-            aria-label="Show add gem input"
-          >
-            +
-          </button>
-
-          {/* Settings Icon */}
-          <button
-            className="rounded-full text-gray-200 hover:cursor-pointer z-30"
-            aria-label="Settings"
-            onClick={() => setSettingsOpen(true)}
-          >
-            <svg
-              width="22"
-              height="22"
-              fill="none"
-              viewBox="0 0 24 24"
+        {!showAddGemInput && (
+          <div className="absolute top-4 right-4 flex justify-center items-center gap-3 z-20">
+            {/* Add Button */}
+            <button
+              onClick={() => handleShowAddGemInput()}
+              className="rounded-lg text-3xl text-gray-200 transition hover:cursor-pointer z-30"
+              aria-label="Show add gem input"
             >
-              <path
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 15.5A3.5 3.5 0 1112 8.5a3.5 3.5 0 010 7zm7.94-2.06a1.5 1.5 0 00.33-1.64l-1-1.73a1.5 1.5 0 01.11-1.64l.95-1.64a1.5 1.5 0 00-.33-1.64l-1.5-1.5a1.5 1.5 0 00-1.64-.33l-1.64.95a1.5 1.5 0 01-1.64-.11l-1.73-1a1.5 1.5 0 00-1.64.33l-1.5 1.5a1.5 1.5 0 00-.33 1.64l.95 1.64a1.5 1.5 0 01-.11 1.64l-1 1.73a1.5 1.5 0 00.33 1.64l1.5 1.5a1.5 1.5 0 001.64.33l1.64-.95a1.5 1.5 0 011.64.11l1.73 1a1.5 1.5 0 001.64-.33l1.5-1.5z"
-              />
-            </svg>
-          </button>
-        </div>
+              +
+            </button>
+
+            {/* Settings Icon */}
+            <button
+              className="rounded-full text-gray-200 hover:cursor-pointer z-30"
+              aria-label="Settings"
+              onClick={() => setSettingsOpen(true)}
+            >
+              <svg
+                width="22"
+                height="22"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 15.5A3.5 3.5 0 1112 8.5a3.5 3.5 0 010 7zm7.94-2.06a1.5 1.5 0 00.33-1.64l-1-1.73a1.5 1.5 0 01.11-1.64l.95-1.64a1.5 1.5 0 00-.33-1.64l-1.5-1.5a1.5 1.5 0 00-1.64-.33l-1.64.95a1.5 1.5 0 01-1.64-.11l-1.73-1a1.5 1.5 0 00-1.64.33l-1.5 1.5a1.5 1.5 0 00-.33 1.64l.95 1.64a1.5 1.5 0 01-.11 1.64l-1 1.73a1.5 1.5 0 00.33 1.64l1.5 1.5a1.5 1.5 0 001.64.33l1.64-.95a1.5 1.5 0 011.64.11l1.73 1a1.5 1.5 0 001.64-.33l1.5-1.5z"
+                />
+              </svg>
+            </button>
+          </div>
+        )}
       </div>
 
 
