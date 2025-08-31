@@ -191,7 +191,7 @@ export default function App() {
       {/* Start: Testing Add Gem Button and Settings Button Here */}
 
       {/* Controls */}
-      <div className="mb-4 mr-24 flex w-full justify-center">
+      <div className="mb-4 mr-24 flex w-full justify-center mx-auto">
         {showAddGemInput && (
           <div className="flex gap-2 w-full max-w-[400px]">
             <input
