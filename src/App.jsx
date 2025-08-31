@@ -351,7 +351,7 @@ export default function App() {
           return (
             <li
               key={index}
-              className="group relative flex items-center rounded-xl px-4 py-3 hover:border hover:border-gray-400"
+              className="group relative flex items-center rounded-xl px-4 py-3 hover:text-white overflow-x-hidden text-wrap"
             >
               {editIndex === index ? (
                 <div className="flex w-full items-center gap-2">
@@ -410,7 +410,7 @@ export default function App() {
               ) : (
                 <>
                   <div className="flex flex-1 flex-col">
-                    <span className="text-base font-semibold leading-tight text-gray-200 hover:text-gray-400">
+                    <span className="text-base font-semibold leading-tight text-gray-200 hover:text-white">
                       {gem}
                     </span>
                   </div>
