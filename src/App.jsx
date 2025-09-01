@@ -368,14 +368,14 @@ export default function App() {
       )}
 
       {/* Gems list (excluding favorites if enabled) */}
-      <ul className="w-full flex-1 space-y-3 overflow-y-auto pb-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 auto-rows-min gap-4">
+      <ul className="w-full flex-1 overflow-y-auto pb-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 auto-rows-min gap-4">
         {gems.map((gem, index) => {
           // If favorites enabled, skip gems that are in favorites for the main grid
           if (isPaidVersion && favoritesFeatureEnabled && favorites.includes(index)) return null;
           return (
             <li
               key={index}
-              className="group relative flex items-center rounded-xl px-4 py-3 hover:text-white text-wrap"
+              className="group relative flex items-start rounded-xl px-4 py-3 hover:text-white min-h-0"
             >
               {editIndex === index ? (
                 <div className="flex w-full items-center gap-2">
@@ -433,12 +433,12 @@ export default function App() {
                 </div>
               ) : (
                 <>
-                  <div className="flex flex-1 flex-col">
-                    <span className="text-base font-semibold leading-tight text-gray-200 hover:text-white">
+                  <div className="flex-1 min-w-0 pr-2">
+                    <span className="text-base font-semibold leading-tight text-gray-200 hover:text-white break-words">
                       {gem}
                     </span>
                   </div>
-                  <div className="relative gem-menu">
+                  <div className="relative gem-menu flex-shrink-0">
                     <button
                       onClick={() => setOpenMenuIndex(openMenuIndex === index ? null : index)}
                       className={`rounded-lg p-2 text-gray-400 hover:bg-gray-600/60 hover:text-white opacity-0 transition-opacity focus-within:opacity-100 group-hover:opacity-100 focus:outline-none focus:ring-1 focus:ring-gray-400 ${openMenuIndex === index ? null : 'focus:ring-0 focus-within:opacity-0'}`}
