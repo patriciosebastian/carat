@@ -67,9 +67,19 @@ export default function App() {
       }
     };
 
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && openMenuIndex !== null) {
+        setOpenMenuIndex(null);
+      }
+    };
+
     if (openMenuIndex !== null) {
       document.addEventListener('mousedown', handleClickOutside);
-      return () => document.removeEventListener('mousedown', handleClickOutside);
+      document.addEventListener('keydown', handleKeyDown);
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+        document.removeEventListener('keydown', handleKeyDown);
+      };
     }
   }, [openMenuIndex]);
 
@@ -431,7 +441,7 @@ export default function App() {
                   <div className="relative gem-menu">
                     <button
                       onClick={() => setOpenMenuIndex(openMenuIndex === index ? null : index)}
-                      className="rounded-lg p-2 text-gray-400 hover:bg-gray-600/60 hover:text-white opacity-0 transition-opacity focus-within:opacity-100 group-hover:opacity-100 focus:outline-none focus:ring-1 focus:ring-gray-400"
+                      className={`rounded-lg p-2 text-gray-400 hover:bg-gray-600/60 hover:text-white opacity-0 transition-opacity focus-within:opacity-100 group-hover:opacity-100 focus:outline-none focus:ring-1 focus:ring-gray-400 ${openMenuIndex === index ? null : 'focus:ring-0 focus-within:opacity-0'}`}
                       aria-label="More actions"
                     >
                       <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
