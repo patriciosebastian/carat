@@ -3,6 +3,8 @@ import React, { useEffect, useRef, useState } from "react";
 export default function App() {
   const [gems, setGems] = useState([]);
   const [newGem, setNewGem] = useState("");
+  const [newGemLink, setNewGemLink] = useState("");
+  const [newGemDisplayText, setNewGemDisplayText] = useState("");
   const [editIndex, setEditIndex] = useState(null);
   const [editValue, setEditValue] = useState("");
   const [activeFilter, setActiveFilter] = useState("All");
@@ -46,6 +48,8 @@ export default function App() {
         if (showAddGemInputRef.current) {
           setShowAddGemInput(false);
           setNewGem("");
+          setNewGemLink("");
+          setNewGemDisplayText("");
         } else {
           setShowAddGemInput(true);
         }
@@ -100,18 +104,36 @@ export default function App() {
 
   const handleAdd = () => {
     const trimmed = newGem.trim();
+    const trimmedLink = newGemLink.trim();
+    const trimmedDisplayText = newGemDisplayText.trim();
+
     if (!trimmed) {
-      showFeedback("error", "Gem cannot be empty.");
+      showFeedback("error", "Text field cannot be empty.");
       return;
     }
+
+    if (trimmedDisplayText && !trimmedLink) {
+      showFeedback("error", "Link is required if Display Text is provided.");
+      return;
+    }
+
     if (gems.some((g) => (g.text || g).trim().toLowerCase() === trimmed.toLowerCase())) {
       showFeedback("error", "Duplicate gem.");
       return;
     }
+
+    const newGemData = {
+      text: trimmed,
+      ...(trimmedLink && { link: trimmedLink }),
+      ...(trimmedDisplayText && { displayText: trimmedDisplayText })
+    };
+
     try {
-      window.api.addItem(trimmed);
-      setGems([...gems, { text: trimmed }]);
+      window.api.addItem(newGemData);
+      setGems([...gems, newGemData]);
       setNewGem("");
+      setNewGemLink("");
+      setNewGemDisplayText("");
       showFeedback("success", "Gem added!");
       addInputRef.current && addInputRef.current.focus();
       setShowAddGemInput(false);
@@ -125,6 +147,8 @@ export default function App() {
     if (showAddGemInputRef.current) {
       setShowAddGemInput(false);
       setNewGem("");
+      setNewGemLink("");
+      setNewGemDisplayText("");
     } else {
       setShowAddGemInput(true);
     }
@@ -221,22 +245,58 @@ export default function App() {
       {/* Controls */}
       <div className="mb-4 mr-24 flex w-full justify-center mx-auto">
         {showAddGemInput && (
-          <div className="flex gap-2 w-full max-w-[400px]">
+          <div className="flex flex-col gap-2 w-full max-w-[400px]">
             <input
               type="text"
               value={newGem}
               onChange={(e) => setNewGem(e.target.value)}
-              placeholder="Add a new gem..."
-              className="flex-1 rounded-lg bg-[#1a1a2e] px-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Text (required)"
+              className="rounded-lg bg-[#1a1a2e] px-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
               onKeyDown={(e) => {
                 if (e.key === "Enter") handleAdd();
                 if (e.key === "Escape") {
                   setNewGem("");
+                  setNewGemLink("");
+                  setNewGemDisplayText("");
                   setShowAddGemInput(false);
                 }
               }}
-              aria-label="Add new gem"
+              aria-label="Add new gem text"
               ref={addInputRef}
+            />
+            <input
+              type="text"
+              value={newGemLink}
+              onChange={(e) => setNewGemLink(e.target.value)}
+              placeholder="Link (optional)"
+              className="rounded-lg bg-[#1a1a2e] px-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleAdd();
+                if (e.key === "Escape") {
+                  setNewGem("");
+                  setNewGemLink("");
+                  setNewGemDisplayText("");
+                  setShowAddGemInput(false);
+                }
+              }}
+              aria-label="Add new gem link"
+            />
+            <input
+              type="text"
+              value={newGemDisplayText}
+              onChange={(e) => setNewGemDisplayText(e.target.value)}
+              placeholder="Display Text (optional)"
+              className="rounded-lg bg-[#1a1a2e] px-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleAdd();
+                if (e.key === "Escape") {
+                  setNewGem("");
+                  setNewGemLink("");
+                  setNewGemDisplayText("");
+                  setShowAddGemInput(false);
+                }
+              }}
+              aria-label="Add new gem display text"
             />
             <button
               onClick={handleAdd}
@@ -357,7 +417,7 @@ export default function App() {
             {favorites.length === 0 && <span className="text-xs text-gray-400">No favorites yet.</span>}
             {favorites.map((favIdx) => (
               <div key={favIdx} className="flex items-center justify-between rounded-lg bg-[#232946] px-3 py-2">
-                <span className="text-base text-white truncate">{gems[favIdx]}</span>
+                <span className="text-base text-white truncate">{gems[favIdx].displayText || gems[favIdx].link || gems[favIdx].text}</span>
                 <button
                   onClick={() => handleToggleFavorite(favIdx)}
                   className="ml-2 rounded p-1 text-yellow-400 hover:bg-yellow-700/30"
@@ -439,9 +499,21 @@ export default function App() {
                 <>
                   <div className="flex-1 min-w-0 pr-2">
                     <span className="text-base font-semibold leading-tight text-gray-200 hover:text-white break-words">
-                      {!gem.displayText && gem.text && gem.text}
-                      {!gem.displayText && gem.link && gem.link}
-                      {gem.displayText && gem.displayText}
+                      {gem.displayText && gem.link ? (
+                        <a
+                          href={gem.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {gem.displayText}
+                        </a>
+                      ) : (
+                        <>
+                          {gem.text && <div>{gem.text}</div>}
+                          {gem.text && gem.link && <div>{gem.link}</div>}
+                          {!gem.text && gem.link && <div>{gem.link}</div>}
+                        </>
+                      )}
                     </span>
                   </div>
                   <div className="relative gem-menu flex-shrink-0">
@@ -543,52 +615,6 @@ export default function App() {
           );
         })}
       </ul>
-
-      {/* Add Gem Button */}
-      {/* <div className="mt-4 flex w-full justify-center">
-        <input
-          type="text"
-          value={newGem}
-          onChange={(e) => setNewGem(e.target.value)}
-          placeholder="Add a new gem..."
-          className="max-w-[320px] flex-1 rounded-lg bg-[#1a1a2e] px-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          onKeyDown={(e) => {
-            if (e.key === "Enter") handleAdd();
-          }}
-          aria-label="Add new gem"
-          ref={addInputRef}
-        />
-        <button
-          onClick={handleAdd}
-          className="ml-2 rounded-lg bg-blue-600 px-5 py-2 font-bold text-white shadow-lg transition hover:bg-blue-700 disabled:opacity-50"
-          disabled={
-            !newGem.trim() ||
-            gems.some(
-              (g) => (g.text || g).trim().toLowerCase() === newGem.trim().toLowerCase(),
-            )
-          }
-          aria-label="Add gem"
-        >
-          +
-        </button>
-      </div> */}
-
-      {/* Settings Icon */}
-      {/* <button
-        className="absolute bottom-4 right-4 rounded-full bg-[#232946] p-2 text-gray-400 shadow-lg transition hover:bg-blue-700/60 hover:text-white"
-        aria-label="Settings"
-        onClick={() => setSettingsOpen(true)}
-      >
-        <svg width="22" height="22" fill="none" viewBox="0 0 24 24">
-          <path
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M12 15.5A3.5 3.5 0 1112 8.5a3.5 3.5 0 010 7zm7.94-2.06a1.5 1.5 0 00.33-1.64l-1-1.73a1.5 1.5 0 01.11-1.64l.95-1.64a1.5 1.5 0 00-.33-1.64l-1.5-1.5a1.5 1.5 0 00-1.64-.33l-1.64.95a1.5 1.5 0 01-1.64-.11l-1.73-1a1.5 1.5 0 00-1.64.33l-1.5 1.5a1.5 1.5 0 00-.33 1.64l.95 1.64a1.5 1.5 0 01-.11 1.64l-1 1.73a1.5 1.5 0 00.33 1.64l1.5 1.5a1.5 1.5 0 001.64.33l1.64-.95a1.5 1.5 0 011.64.11l1.73 1a1.5 1.5 0 001.64-.33l1.5-1.5z"
-          />
-        </svg>
-      </button> */}
     </div>
   );
 }
