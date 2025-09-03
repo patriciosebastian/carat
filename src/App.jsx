@@ -460,7 +460,18 @@ export default function App() {
             {favorites.length === 0 && <span className="text-xs text-gray-400">No favorites yet.</span>}
             {favorites.map((favIdx) => (
               <div key={favIdx} className="flex items-center justify-between rounded-lg bg-[#232946] px-3 py-2">
-                <span className="text-base text-white truncate">{gems[favIdx].displayText || gems[favIdx].link || gems[favIdx].text}</span>
+                {gems[favIdx].link ? (
+                  <a
+                    href={gems[favIdx].link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-base text-white truncate hover:text-white"
+                  >
+                    {gems[favIdx].displayText || gems[favIdx].link}
+                  </a>
+                ) : (
+                  <span className="text-base text-white truncate hover:text-white">{gems[favIdx].text}</span>
+                )}
                 <button
                   onClick={() => handleToggleFavorite(favIdx)}
                   className="ml-2 rounded p-1 text-yellow-400 hover:bg-yellow-700/30"
