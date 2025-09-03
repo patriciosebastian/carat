@@ -104,13 +104,13 @@ export default function App() {
       showFeedback("error", "Gem cannot be empty.");
       return;
     }
-    if (gems.some((g) => g.trim().toLowerCase() === trimmed.toLowerCase())) {
+    if (gems.some((g) => (g.content || g).trim().toLowerCase() === trimmed.toLowerCase())) {
       showFeedback("error", "Duplicate gem.");
       return;
     }
     try {
       window.api.addItem(trimmed);
-      setGems([...gems, trimmed]);
+      setGems([...gems, { content: trimmed }]);
       setNewGem("");
       showFeedback("success", "Gem added!");
       addInputRef.current && addInputRef.current.focus();
@@ -132,7 +132,7 @@ export default function App() {
 
   const handleEdit = (index) => {
     setEditIndex(index);
-    setEditValue(gems[index]);
+    setEditValue(gems[index].content || gems[index]);
   };
 
   const handleSave = () => {
@@ -144,7 +144,7 @@ export default function App() {
     if (
       gems.some(
         (g, i) =>
-          i !== editIndex && g.trim().toLowerCase() === trimmed.toLowerCase(),
+          i !== editIndex && (g.content || g).trim().toLowerCase() === trimmed.toLowerCase(),
       )
     ) {
       showFeedback("error", "Duplicate gem.");
@@ -153,7 +153,11 @@ export default function App() {
     try {
       window.api.updateItem(editIndex, trimmed);
       const updatedGems = [...gems];
-      updatedGems[editIndex] = trimmed;
+      if (typeof gems[editIndex] === 'object') {
+        updatedGems[editIndex] = { ...gems[editIndex], content: trimmed };
+      } else {
+        updatedGems[editIndex] = trimmed;
+      }
       setGems(updatedGems);
       setEditIndex(null);
       setEditValue("");
@@ -240,7 +244,7 @@ export default function App() {
               disabled={
                 !newGem.trim() ||
                 gems.some(
-                  (g) => g.trim().toLowerCase() === newGem.trim().toLowerCase(),
+                  (g) => (g.content || g).trim().toLowerCase() === newGem.trim().toLowerCase(),
                 )
               }
               aria-label="Add gem"
@@ -400,7 +404,7 @@ export default function App() {
                       gems.some(
                         (g, i) =>
                           i !== editIndex &&
-                          g.trim().toLowerCase() ===
+                          (g.content || g).trim().toLowerCase() ===
                             editValue.trim().toLowerCase(),
                       )
                     }
@@ -435,7 +439,9 @@ export default function App() {
                 <>
                   <div className="flex-1 min-w-0 pr-2">
                     <span className="text-base font-semibold leading-tight text-gray-200 hover:text-white break-words">
-                      {gem}
+                      {!gem.displayText && gem.content && gem.content}
+                      {!gem.displayText && gem.link && gem.link}
+                      {gem.displayText && gem.displayText}
                     </span>
                   </div>
                   <div className="relative gem-menu flex-shrink-0">
@@ -558,7 +564,7 @@ export default function App() {
           disabled={
             !newGem.trim() ||
             gems.some(
-              (g) => g.trim().toLowerCase() === newGem.trim().toLowerCase(),
+              (g) => (g.content || g).trim().toLowerCase() === newGem.trim().toLowerCase(),
             )
           }
           aria-label="Add gem"
