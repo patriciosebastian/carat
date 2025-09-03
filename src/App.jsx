@@ -7,6 +7,8 @@ export default function App() {
   const [newGemDisplayText, setNewGemDisplayText] = useState("");
   const [editIndex, setEditIndex] = useState(null);
   const [editValue, setEditValue] = useState("");
+  const [editLink, setEditLink] = useState("");
+  const [editDisplayText, setEditDisplayText] = useState("");
   const [activeFilter, setActiveFilter] = useState("All");
   const [feedback, setFeedback] = useState({ type: "", message: "" });
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -87,6 +89,24 @@ export default function App() {
     }
   }, [openMenuIndex]);
 
+  useEffect(() => {
+    const handleEditModeKeyDown = (e) => {
+      if (e.key === 'Escape' && editIndex !== null) {
+        setEditIndex(null);
+        setEditValue("");
+        setEditLink("");
+        setEditDisplayText("");
+      }
+    };
+
+    if (editIndex !== null) {
+      document.addEventListener('keydown', handleEditModeKeyDown);
+      return () => {
+        document.removeEventListener('keydown', handleEditModeKeyDown);
+      };
+    }
+  }, [editIndex]);
+
   const handleSettingsKeyDown = (e) => {
     if (e.key === "Escape") setSettingsOpen(false);
   };
@@ -156,15 +176,33 @@ export default function App() {
 
   const handleEdit = (index) => {
     setEditIndex(index);
-    setEditValue(gems[index].text || gems[index]);
+    const gem = gems[index];
+    if (typeof gem === 'object') {
+      setEditValue(gem.text || "");
+      setEditLink(gem.link || "");
+      setEditDisplayText(gem.displayText || "");
+    } else {
+      setEditValue(gem);
+      setEditLink("");
+      setEditDisplayText("");
+    }
   };
 
   const handleSave = () => {
     const trimmed = editValue.trim();
+    const trimmedLink = editLink.trim();
+    const trimmedDisplayText = editDisplayText.trim();
+
     if (!trimmed) {
-      showFeedback("error", "Gem cannot be empty.");
+      showFeedback("error", "Text field cannot be empty.");
       return;
     }
+
+    if (trimmedDisplayText && !trimmedLink) {
+      showFeedback("error", "Link is required if Display Text is provided.");
+      return;
+    }
+
     if (
       gems.some(
         (g, i) =>
@@ -174,17 +212,22 @@ export default function App() {
       showFeedback("error", "Duplicate gem.");
       return;
     }
+
+    const updatedGemData = {
+      text: trimmed,
+      ...(trimmedLink && { link: trimmedLink }),
+      ...(trimmedDisplayText && { displayText: trimmedDisplayText })
+    };
+
     try {
-      window.api.updateItem(editIndex, trimmed);
+      window.api.updateItem(editIndex, updatedGemData);
       const updatedGems = [...gems];
-      if (typeof gems[editIndex] === 'object') {
-        updatedGems[editIndex] = { ...gems[editIndex], text: trimmed };
-      } else {
-        updatedGems[editIndex] = trimmed;
-      }
+      updatedGems[editIndex] = updatedGemData;
       setGems(updatedGems);
       setEditIndex(null);
       setEditValue("");
+      setEditLink("");
+      setEditDisplayText("");
       showFeedback("success", "Gem updated!");
     } catch (error) {
       showFeedback("error", "Failed to update gem.");
@@ -442,58 +485,105 @@ export default function App() {
               className="group relative flex items-start rounded-xl px-4 py-3 hover:text-white min-h-0"
             >
               {editIndex === index ? (
-                <div className="flex w-full items-center gap-2">
+                <div className="flex flex-col w-full gap-2">
                   <input
                     type="text"
                     value={editValue}
                     onChange={(e) => setEditValue(e.target.value)}
-                    className="flex-1 rounded-lg bg-[#1a1a2e] px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    aria-label="Edit gem"
+                    placeholder="Text (required)"
+                    className="rounded-lg bg-[#1a1a2e] px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    aria-label="Edit gem text"
                     ref={editInputRef}
                     onKeyDown={(e) => {
                       if (e.key === "Enter") handleSave();
-                      if (e.key === "Escape") setEditIndex(null);
+                      if (e.key === "Escape") {
+                        setEditIndex(null);
+                        setEditValue("");
+                        setEditLink("");
+                        setEditDisplayText("");
+                      }
                     }}
                   />
-                  <button
-                    onClick={handleSave}
-                    className="rounded-lg bg-green-600 px-3 py-2 text-white transition hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400 disabled:opacity-50"
-                    aria-label="Save"
-                    disabled={
-                      !editValue.trim() ||
-                      gems.some(
-                        (g, i) =>
-                          i !== editIndex &&
-                          (g.text || g).trim().toLowerCase() ===
-                            editValue.trim().toLowerCase(),
-                      )
-                    }
-                  >
-                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
-                      <path
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                  </button>
-                  <button
-                    onClick={() => setEditIndex(null)}
-                    className="rounded-lg bg-red-600 px-3 py-2 text-white transition hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400"
-                    aria-label="Cancel"
-                  >
-                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
-                      <path
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
-                  </button>
+                  <input
+                    type="text"
+                    value={editLink}
+                    onChange={(e) => setEditLink(e.target.value)}
+                    placeholder="Link (optional)"
+                    className="rounded-lg bg-[#1a1a2e] px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    aria-label="Edit gem link"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") handleSave();
+                      if (e.key === "Escape") {
+                        setEditIndex(null);
+                        setEditValue("");
+                        setEditLink("");
+                        setEditDisplayText("");
+                      }
+                    }}
+                  />
+                  <input
+                    type="text"
+                    value={editDisplayText}
+                    onChange={(e) => setEditDisplayText(e.target.value)}
+                    placeholder="Display Text (optional)"
+                    className="rounded-lg bg-[#1a1a2e] px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    aria-label="Edit gem display text"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") handleSave();
+                      if (e.key === "Escape") {
+                        setEditIndex(null);
+                        setEditValue("");
+                        setEditLink("");
+                        setEditDisplayText("");
+                      }
+                    }}
+                  />
+                  <div className="flex gap-2">
+                    <button
+                      onClick={handleSave}
+                      className="flex-1 rounded-lg bg-green-600 px-3 py-2 text-white transition hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400 disabled:opacity-50"
+                      aria-label="Save"
+                      disabled={
+                        !editValue.trim() ||
+                        gems.some(
+                          (g, i) =>
+                            i !== editIndex &&
+                            (g.text || g).trim().toLowerCase() ===
+                              editValue.trim().toLowerCase(),
+                        )
+                      }
+                    >
+                      <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
+                        <path
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M5 13l4 4L19 7"
+                        />
+                      </svg>
+                    </button>
+                    <button
+                      onClick={() => {
+                        setEditIndex(null);
+                        setEditValue("");
+                        setEditLink("");
+                        setEditDisplayText("");
+                      }}
+                      className="flex-1 rounded-lg bg-red-600 px-3 py-2 text-white transition hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400"
+                      aria-label="Cancel"
+                    >
+                      <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
+                        <path
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <>
