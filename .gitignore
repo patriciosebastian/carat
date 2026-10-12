@@ -3,3 +3,6 @@ dist/
 
 .env
 .DS_Store
+
+# Private notes repo, linked in locally (see patriciosebastian/notes)
+.notes
